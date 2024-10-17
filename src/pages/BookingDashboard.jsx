@@ -40,16 +40,21 @@ export const BookingDashboard = () => {
   }, [selectedDate, selectedSlot, selectedTherapist]);
 
   const dates = Array.from({ length: 7 }, (_, i) => dayjs().add(i, "day").format("YYYY-MM-DD"));
-  const timeSlots = [{ label: "Morning", times: generateTimeSlots(9, 12) }, { label: "Afternoon", times: generateTimeSlots(12, 17) }, { label: "Evening", times: generateTimeSlots(17, 18) }];
+  const timeSlots = [
+    { label: "Morning", times: generateTimeSlots(9, 12) },
+    { label: "Afternoon", times: generateTimeSlots(12, 17) },
+    { label: "Evening", times: generateTimeSlots(17, 21) }, // Adjust as necessary
+  ];
   const therapists = [{ id: "1", name: "Dr. Saily", available: true }, { id: "2", name: "Dr. Shweta", available: true }];
 
   function generateTimeSlots(startHour, endHour) {
     const slots = [];
     for (let hour = startHour; hour < endHour; hour++) {
-      slots.push(`${hour}:00 AM`, `${hour}:30 AM`);
+      slots.push(`${hour % 12 || 12}:00 ${hour < 12 ? "AM" : "PM"}`, `${hour % 12 || 12}:30 ${hour < 12 ? "AM" : "PM"}`);
     }
-    return slots.map(time => time.replace(/12:00 AM/, "12:00 PM").replace(/:00 PM/, ":00 PM"));
+    return slots;
   }
+
 
   console.log("State before navigation:", {
     formData,
@@ -110,8 +115,8 @@ export const BookingDashboard = () => {
       </div>
 
       <button onClick={handleNavigate}
-      className="bg-[#fd6500] w-full my-[2vh] py-[1vh] rounded-lg">
-      <p className="text-[2.4vh] font-semibold text-white">Submit</p>
+        className="bg-[#fd6500] w-full my-[2vh] py-[1vh] rounded-lg">
+        <p className="text-[2.4vh] font-semibold text-white">Submit</p>
         Submit
       </button>
     </div>

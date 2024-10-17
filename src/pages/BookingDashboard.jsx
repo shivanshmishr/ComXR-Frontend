@@ -1,21 +1,44 @@
 import React, { useState, useEffect } from "react";
 import dayjs from "dayjs";
-import { Link } from "react-router-dom";
+import { useNavigate, useLocation } from 'react-router-dom';
 import doctor from "../assets/doctor.png";
 
 export const BookingDashboard = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Ensure that formData is pulled from location.state if available
+  const [formData, setFormData] = useState(location.state?.formData || {});
+
+  console.log("Initial location state in BookingDashboard:", location.state);
+
   const [selectedDate, setSelectedDate] = useState(dayjs().format("YYYY-MM-DD"));
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [selectedTherapist, setSelectedTherapist] = useState(null);
 
   const handleSelectTherapist = (therapistId) => {
     setSelectedTherapist(prev => prev === therapistId ? null : therapistId);
+    console.log("Selected therapist:", therapistId);
+  };
+
+  const handleNavigate = () => {
+    // Ensure formData is passed correctly
+    navigate('/bookingconfirmslot', {
+      state: {
+        formData, // Correctly passing formData
+        selectedDate,
+        selectedSlot,
+        selectedTherapist
+      }
+    });
   };
 
   useEffect(() => {
     const state = { selectedDate, selectedSlot, selectedTherapist };
+    console.log("Updating local storage with state:", state);
     localStorage.setItem('appointmentState', JSON.stringify(state));
   }, [selectedDate, selectedSlot, selectedTherapist]);
+
   const dates = Array.from({ length: 7 }, (_, i) => dayjs().add(i, "day").format("YYYY-MM-DD"));
   const timeSlots = [{ label: "Morning", times: generateTimeSlots(9, 12) }, { label: "Afternoon", times: generateTimeSlots(12, 17) }, { label: "Evening", times: generateTimeSlots(17, 18) }];
   const therapists = [{ id: "1", name: "Dr. Saily", available: true }, { id: "2", name: "Dr. Shweta", available: true }];
@@ -28,10 +51,16 @@ export const BookingDashboard = () => {
     return slots.map(time => time.replace(/12:00 AM/, "12:00 PM").replace(/:00 PM/, ":00 PM"));
   }
 
-  console.log("Passing state:", { selectedDate, selectedSlot, selectedTherapist });
+  console.log("State before navigation:", {
+    formData,
+    selectedDate,
+    selectedSlot,
+    selectedTherapist
+  });
 
   return (
     <div className="p-4">
+      {/* Form Content */}
       <h1 className="text-[#2C3776] font-semibold text-[2.6vh]">Book an appointment with</h1>
       <p className="text-[#2C3776] font-bold text-[2.7vh]">Physica Physiotherapy</p>
       <h1 className="text-[3vh] my-[1.5vh] text-[#fd6500]">About Physica</h1>
@@ -50,6 +79,7 @@ export const BookingDashboard = () => {
         ))}
       </div>
 
+      {/* Date and Time Slot Selection */}
       <h1 className="text-[3.3vh] font-semibold text-gray-900 my-4">Select Date</h1>
       <div className="flex space-x-4 overflow-x-auto mb-4">
         {dates.map(date => (
@@ -79,18 +109,11 @@ export const BookingDashboard = () => {
         ))}
       </div>
 
-      <Link to={{
-        pathname: "/bookingconfirmslot",
-        state: {
-          selectedDate,
-          selectedSlot,
-          selectedTherapist
-        }
-      }}>
-        <button className="bg-[#fd6500] w-full my-[2vh] py-[1vh] rounded-lg">
-          <p className="text-[2.4vh] font-semibold text-white">Submit</p>
-        </button>
-      </Link>
+      <button onClick={handleNavigate}
+      className="bg-[#fd6500] w-full my-[2vh] py-[1vh] rounded-lg">
+      <p className="text-[2.4vh] font-semibold text-white">Submit</p>
+        Submit
+      </button>
     </div>
   );
 };

@@ -1,11 +1,11 @@
 import './App.css';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { HomeForm } from './pages/HomeForm';
 import { BookingDashboard } from './pages/BookingDashboard';
 import { DashboardDetails } from './pages/DashboardDetails';
 
 function App() {
-
   const apiUrl = process.env.REACT_APP_API_URL;
   console.log("Api Url: ", apiUrl);
 
@@ -16,7 +16,7 @@ function App() {
         <Route path="/bookingdashboard" element={<BookingDashboard />} />
         <Route path="/bookingconfirmslot" element={<DashboardDetails />} />
       </Routes>
-    </Router  >
+    </Router>
   );
 }
 
